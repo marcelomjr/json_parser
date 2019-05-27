@@ -1,4 +1,3 @@
-
 %{
 #include <stdlib.h>
 void yyerror(char *);
@@ -6,8 +5,6 @@ void yyerror(char *);
 #include "y.tab.h"
 
 %}
-
-
 %%
 
 ["] {return QUOTATION_MARKS;}
@@ -18,11 +15,17 @@ void yyerror(char *);
 
 [0-9]+ {return NUM;}
 
-^[ \t\n\r\f\v]*[{]  {return FIRST_BRACE;}
+^[ \t\n\r\f\v]*[{]  {
+    // It matches if the input starts with a left brace (ignoring spaces).
+    return FIRST_BRACE;
+}
     
 [{]  {return LEFT_BRACE;}
 
-[}][ \t\n\r\f\v]*$  {return LAST_BRACE;}
+[}][ \t\n\r\f\v]*$  {
+    // It matches if the input ends with a right brace (ignoring spaces).
+    return LAST_BRACE;
+}
 
 [}]  {return RIGHT_BRACE;}
 
@@ -36,7 +39,10 @@ void yyerror(char *);
 
 [[:space:]] {};
 
-. {};
+. {
+    // If there is a invalid charactere, return ERROR for invalidate the JSON.
+    return ERROR;
+};
 
 
 %%
