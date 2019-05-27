@@ -10,31 +10,33 @@ void yyerror(char *);
 
 %%
 
-["][^\n]+["] { return STR;}
+["] {return QUOTATION_MARKS;}
 
-[0-9]+[.][0-9]+ { return NUM;}
+[a-zA-Z]+ {return LETTERS;}
 
-[0-9] { return NUM;}
+[0-9]+[.][0-9]+ {return NUM;}
 
-[{]  { return LEFT_BRACE;}
+[0-9]+ {return NUM;}
 
-[}]  { return RIGHT_BRACE;}
+^[ \t\n\r\f\v]*[{]  {return FIRST_BRACE;}
+    
+[{]  {return LEFT_BRACE;}
+
+[}][ \t\n\r\f\v]*$  {return LAST_BRACE;}
+
+[}]  {return RIGHT_BRACE;}
+
+[\[] {return LEFT_BRACKET;}
+
+[\]] {return RIGHT_BRACKET;}
 
 [:] {return COLON;}
 
-[,] { return COMMA;}
+[,] {return COMMA;}
 
+[[:space:]] {};
 
-(null) {}
-
-(false) {}
-
-(true) {}
-
-[:space:] {printf("Espaço\n");}
-
-[.] {printf("ERROR\n");}
-
+. {};
 
 
 %%

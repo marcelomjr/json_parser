@@ -6,54 +6,116 @@
 void yyerror(char *c);
 int yylex(void);
 
-
+int is_valid = 0;
 
 %}
-%token COMMA COLON LEFT_BRACE RIGHT_BRACE NUM STR TRUE FALSE NULL EOF
+%token COMMA COLON LEFT_BRACE RIGHT_BRACE FIRST_BRACE LAST_BRACE NUM TRUE FALSE QUOTATION_MARKS LETTERS LEFT_BRACKET RIGHT_BRACKET
 
 %%
 
-NAME_AND_COLON: STR COLON {
-}
+VALID: FINAL_OBJECT {is_valid = 1;}
+  
+FINAL_OBJECT: 
+    FIRST_BRACE SET_OF_PAIRS LAST_BRACE {
 
-VALUE: 
-    NUM
-    | STR {}
-    | OBJECT {}
-    | ARRAY {}
-    | TRUE {}
-    | FALSE {}
-    | NULL {};
+    }
+    | FIRST_BRACE PAIR LAST_BRACE {
 
+    };
+
+OBJECT: 
+    LEFT_BRACE SET_OF_PAIRS RIGHT_BRACE {
+
+    }
+    | LEFT_BRACE PAIR RIGHT_BRACE {
+
+    };
+
+
+SET_OF_PAIRS: 
+    PAIR COMMA PAIR {
+
+    }
+    | SET_OF_PAIRS COMMA PAIR {
+
+    };
+    
 
 PAIR: 
-    NAME_AND_COLON VALUE {};
-    
-SET_OF_PAIRS:
-    PAIR {}
-    | SET_OF_PAIRS COMMA PAIR {};
-    
-OBJECT: LEFT_BRACE SET_OF_PAIRS RIGHT_BRACE {
-};
+    STRING COLON VALUE {
 
-COLLECTION_OF_VALUES: 
-    VALUE COMMA VALUE {}
-    | COLLECTION_OF_VALUES  COMMA VALUE {};
+    };
+
+
+VALUE: 
+    STRING {
+
+    }
+    | NUM {
+
+    }
+    | OBJECT {
+
+    }
+    | ARRAY {
+
+    };
+    
+STRING: 
+    STRING_START QUOTATION_MARKS {
+
+    };
+
+
+STRING_START: 
+    QUOTATION_MARKS LETTERS {
+      
+    }
+    | QUOTATION_MARKS NUM {
+      
+    }
+    | STRING_START LETTERS {
+      
+    }
+    | STRING_START NUM{
+      
+    };
+    
+
+
     
 ARRAY: 
-    LEFT_BRACE COLLECTION_OF_VALUES RIGHT_BRACE {}
-    | LEFT_BRACE VALUE RIGHT_BRACE {}
-    | LEFT_BRACE RIGHT_BRACE {};
+    LEFT_BRACKET COLLECTION_OF_ELEMENTS RIGHT_BRACKET {}
+    | LEFT_BRACKET ARRAY_ELEMENT RIGHT_BRACKET {};  
     
-       
+COLLECTION_OF_ELEMENTS: 
+    ARRAY_ELEMENT COMMA ARRAY_ELEMENT {
+        
+    }
+    | COLLECTION_OF_ELEMENTS  COMMA ARRAY_ELEMENT {
+
+    };
+    
+ARRAY_ELEMENT:
+    VALUE {
+
+    }
+    | LEFT_BRACKET RIGHT_BRACKET {
+
+    };
 %%
 
 void yyerror(char *s) {
 }
 
 int main() {
-    printf("executa\n");
     yyparse();
+    if (is_valid) {
+        printf("VALIDO\n");
+    }
+    else {
+        printf("INVALIDO\n");
+    }
     return 0;
 
 }
